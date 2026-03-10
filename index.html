@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Gimnasia Torneo V5</title>
+<title>Gimnasia Torneo V6</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/htm@3/dist/htm.js"></script>
@@ -506,7 +506,7 @@ function BannerCarousel(){
   if(!banners.length)return html`<div class="bc" style=${{display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}><span style=${{fontSize:"2rem"}}>🤸‍♀️</span><h2 style=${{color:"var(--gold)",fontFamily:"Playfair Display,serif",marginTop:"8px"}}>Torneo de Gimnasia Artística</h2><p style=${{color:"rgba(245,240,232,.6)",marginTop:"4px",fontSize:".875rem"}}>Competencia Femenina</p></div>`;
   return html`<div class="bc">
     ${banners.map((b,i)=>html`<div key=${b.id} class=${"bsl "+(i===cur?"act":"")} style=${{backgroundImage:b.imagen_url?"url("+b.imagen_url+")":undefined,backgroundSize:"cover",backgroundPosition:"center"}}>
-      ${b.imagen_url&&html`<div style=${{position:"absolute",inset:0,background:"rgba(13,27,42,.6)}}"}/>`}
+      ${b.imagen_url&&html`<div style=${{position:"absolute",inset:0,background:"rgba(13,27,42,.6)"}}/>`}
       <div style=${{position:"relative"}}><h2>${b.texto}</h2></div>
     </div>`)}
     ${banners.length>1&&html`<div style=${{position:"absolute",bottom:"10px",display:"flex",gap:"6px",left:"50%",transform:"translateX(-50%)"}}>
