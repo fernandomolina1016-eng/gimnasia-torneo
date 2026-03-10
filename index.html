@@ -279,7 +279,7 @@ function Modal({title,onClose,children,footer}){
 }
 
 function Confirm({msg,onOk,onNo}){
-  return html`<${Modal} title="Confirmar" onClose=${onNo} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${onNo}>Cancelar</button><button class="btn bd" onClick=${onOk}>Eliminar</button></div>`}><p style=${{color:"var(--ts)"}}>${msg}</p><//>`;
+  return html`<${Modal} title="Confirmar" onClose=${onNo} footer=${html`<><button class="btn bo" onClick=${onNo}>Cancelar</button><button class="btn bd" onClick=${onOk}>Eliminar</button></>`}><p style=${{color:"var(--ts)"}}>${msg}</p><//>`;
 }
 
 function AuthPage(){
@@ -340,7 +340,7 @@ function SimpleCRUD({title,table,fieldLabel,fieldKey}){
       ${items.map(i=>html`<tr key=${i.id}><td><strong>${i[fieldKey]}</strong></td><td style=${{color:"var(--tl)",fontSize:".8rem"}}>${new Date(i.created_at).toLocaleDateString("es-AR")}</td>
         <td><div style=${{display:"flex",gap:"6px"}}><button class="btn bo bsm" onClick=${()=>{setVal(String(i[fieldKey]));setErr("");setModal({mode:"edit",item:i});}}><${Ic} name="edit" size=${12}/></button><button class="btn bd bsm" onClick=${()=>setConf(i.id)}><${Ic} name="trash" size=${12}/></button></div></td></tr>`)}
     </tbody></table></div>`}</div>
-    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Agregar "+title:"Editar "+title} onClose=${()=>setModal(null)} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></div>`}>
+    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Agregar "+title:"Editar "+title} onClose=${()=>setModal(null)} footer=${html`<><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></>`}>
       ${err&&html`<${Alrt} type="error">${err}<//>` }
       <div class="fg"><label class="fl">${fieldLabel}</label><input class="fc" value=${val} onInput=${e=>setVal(e.target.value)} type=${(fieldKey==="numero"||fieldKey==="valor")?"number":"text"} onKeyDown=${e=>e.key==="Enter"&&save()} autoFocus/></div>
     <//>` }
@@ -366,7 +366,7 @@ function ParticipantesAdmin(){
           <td><div style=${{display:"flex",gap:"6px"}}><button class="btn bo bsm" onClick=${()=>{setForm({nombre:p.nombre,apellido:p.apellido,dni:p.dni,equipo_id:p.equipo_id,nivel_id:p.nivel_id,categoria_id:p.categoria_id,anio_id:p.anio_id});setErr("");setModal({mode:"edit",item:p});}}><${Ic} name="edit" size=${12}/></button><button class="btn bd bsm" onClick=${()=>setConf(p.id)}><${Ic} name="trash" size=${12}/></button></div></td></tr>`)}
       </tbody></table></div>`}
     </div>
-    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nueva Participante":"Editar Participante"} onClose=${()=>setModal(null)} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save} disabled=${sav}>${sav?"Guardando...":"Guardar"}</button></div>`}>
+    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nueva Participante":"Editar Participante"} onClose=${()=>setModal(null)} footer=${html`<><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save} disabled=${sav}>${sav?"Guardando...":"Guardar"}</button></>`}>
       ${err&&html`<${Alrt} type="error">${err}<//>` }
       <div class="fgrid">
         ${[["nombre","Nombre"],["apellido","Apellido"],["dni","DNI"]].map(([k,l])=>html`<div class="fg" key=${k}><label class="fl">${l}</label><input class="fc" value=${form[k]||""} onInput=${e=>{const v=e.target.value;setForm(f=>Object.assign({},f,{[k]:v}));}}/></div>`)}
@@ -388,7 +388,7 @@ function Calificaciones({profile}){
     setSavMap(p=>Object.assign({},p,{[pid]:true}));
     const sc=scores[pid]||{};
     const total=(parseFloat(sc.suelo)||0)+(parseFloat(sc.salto)||0)+(parseFloat(sc.viga)||0)+(parseFloat(sc.paralelas)||0);
-    const pl={participante_id:pid,suelo:parseFloat(sc.suelo)||0,salto:parseFloat(sc.salto)||0,viga:parseFloat(sc.viga)||0,paralelas:parseFloat(sc.paralelas)||0,juez_id:profile?profile.id:null};
+    const pl={participante_id:pid,suelo:parseFloat(sc.suelo)||0,salto:parseFloat(sc.salto)||0,viga:parseFloat(sc.viga)||0,paralelas:parseFloat(sc.paralelas)||0,total,juez_id:profile?profile.id:null};
     try{if(cals[pid])await sb.from("calificaciones").update(pl).eq("participante_id",pid);else await sb.from("calificaciones").insert(pl);setCals(p=>Object.assign({},p,{[pid]:pl}));setMsgMap(p=>Object.assign({},p,{[pid]:"ok"}));setTimeout(()=>setMsgMap(p=>{const n=Object.assign({},p);delete n[pid];return n;}),2000);}catch(e){setMsgMap(p=>Object.assign({},p,{[pid]:"err"}));}
     setSavMap(p=>Object.assign({},p,{[pid]:false}));
   }
@@ -402,7 +402,7 @@ function Calificaciones({profile}){
         ${filt.length===0&&html`<tr><td colSpan=${7}><div class="es">Sin participantes</div></td></tr>`}
         ${filt.map(p=>{const sc=scores[p.id]||{};const t=(parseFloat(sc.suelo)||0)+(parseFloat(sc.salto)||0)+(parseFloat(sc.viga)||0)+(parseFloat(sc.paralelas)||0);return html`<tr key=${p.id}>
           <td><div><strong>${p.apellido}, ${p.nombre}</strong></div><div style=${{fontSize:".75rem",color:"var(--tl)"}}>${p.equipos&&p.equipos.nombre} · N${p.niveles&&p.niveles.numero}</div></td>
-          ${discs.map(d=>{const pid=p.id;return html`<td key=${d}><input type="number" class="si" value=${sc[d]!=null?sc[d]:""} onChange=${e=>{const v=e.target.value;setScores(prev=>Object.assign({},prev,{[pid]:Object.assign({},prev[pid]||{},{[d]:v})}));}} min=${0} max=${10} step=${0.001}/></td>`; })}
+          ${discs.map(d=>html`<td key=${d}><input type="number" class="si" value=${sc[d]!=null?sc[d]:""} onInput=${e=>{const v=e.target.value;setScores(p=>{const c=p[p.id]||{};return Object.assign({},p,{[p.id]:Object.assign({},c,{[d]:v})});})}} min=${0} max=${10} step=${0.001}/></td>`)}
           <td><strong style=${{color:"var(--gold-dark)"}}>${t.toFixed(3)}</strong></td>
           <td>${msgMap[p.id]==="ok"?html`<span style=${{color:"var(--success)",fontSize:".8rem"}}>✓</span>`:msgMap[p.id]==="err"?html`<span style=${{color:"var(--danger)",fontSize:".8rem"}}>Error</span>`:html`<button class="btn bg bsm" onClick=${()=>saveCal(p.id)} disabled=${savMap[p.id]}>${savMap[p.id]?"...":"Guardar"}</button>`}</td>
         </tr>`;})}</tbody></table></div>`}
@@ -470,7 +470,7 @@ function BannersAdmin(){
       ${items.map(b=>html`<tr key=${b.id}><td>${b.texto}</td><td style=${{fontSize:".75rem",color:"var(--tl)",maxWidth:"150px",overflow:"hidden",textOverflow:"ellipsis"}}>${b.imagen_url||"—"}</td><td>${b.orden}</td><td><span class=${"badge "+(b.activo?"bj":"bpub")}>${b.activo?"Activo":"Inactivo"}</span></td>
         <td><div style=${{display:"flex",gap:"6px"}}><button class="btn bo bsm" onClick=${()=>{setForm({texto:b.texto,imagen_url:b.imagen_url,orden:b.orden,activo:b.activo});setErr("");setModal({mode:"edit",item:b});}}><${Ic} name="edit" size=${12}/></button><button class="btn bd bsm" onClick=${()=>setConf(b.id)}><${Ic} name="trash" size=${12}/></button></div></td></tr>`)}
     </tbody></table></div>`}</div>
-    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nuevo Banner":"Editar Banner"} onClose=${()=>setModal(null)} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></div>`}>
+    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nuevo Banner":"Editar Banner"} onClose=${()=>setModal(null)} footer=${html`<><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></>`}>
       ${err&&html`<${Alrt} type="error">${err}<//>` }
       <div class="fg"><label class="fl">Texto</label><textarea class="fc" value=${form.texto||""} onInput=${e=>{const v=e.target.value;setForm(f=>Object.assign({},f,{texto:v}));}}/></div>
       <div class="fg"><label class="fl">URL Imagen (opcional)</label><input class="fc" value=${form.imagen_url||""} onInput=${e=>{const v=e.target.value;setForm(f=>Object.assign({},f,{imagen_url:v}));}} placeholder="https://..."/></div>
@@ -616,7 +616,7 @@ function App(){
   return html`<div class="shell">
     <div class=${"sov "+(sbOpen?"vis":"")} onClick=${()=>setSbOpen(false)}/>
     <aside class=${"sb "+(sbOpen?"open":"")}>
-      <div class="sb-logo"><h1>🤸‍♀️ GimnasiaTorneo</h1><p>Gymnastic Tournament Manager</p></div>
+      <div class="sb-logo"><h1>🤸‍♀️ GimnasiaTorneo</h1><p>Torneo de Gimnasia Artística</p></div>
       <nav class="sb-nav">${vis.map(item=>{let secEl=null;if(item.sec&&item.sec!==lastSec){secEl=html`<div key=${"s-"+item.sec} class="sec-lbl">${item.sec}</div>`;lastSec=item.sec;}return html`<div key=${item.id}>${secEl}<div class=${"ni "+(page===item.id?"act":"")} onClick=${()=>{setPage(item.id);setSbOpen(false);}}><${Ic} name=${item.icon} size=${16}/>${item.label}</div></div>`;})}</nav>
       <div class="sb-foot"><div class="ubadge"><div class="uavatar">${ini}</div><div><div class="uemail">${user&&user.email}</div><div class="urole">${role}</div></div></div><button class="btn-out" onClick=${()=>sb.auth.signOut()}>Cerrar sesión</button></div>
     </aside>
