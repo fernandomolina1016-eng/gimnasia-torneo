@@ -634,7 +634,7 @@ function GaleriaAdmin(){
   const [fotos,setFotos]=useState([]);const [ld,setLd]=useState(true);const [fil,setFil]=useState("todas");
   const load=useCallback(async function(){
     setLd(true);
-    const res=await sb.from("galeria").select("*, profiles(email)").order("created_at",{ascending:false});
+    const res=await sb.from("galeria").select("*").order("created_at",{ascending:false});
     setFotos(res.data||[]);setLd(false);
   },[]);
   useEffect(function(){load();},[load]);
@@ -663,7 +663,7 @@ function GaleriaAdmin(){
               <img src=${f.url} style=${{width:"100%",height:"100%",objectFit:"cover"}} loading="lazy"/>
             </div>
             <div style=${{padding:"10px 12px"}}>
-              <div style=${{fontSize:".72rem",color:"var(--tl)",marginBottom:"8px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${f.profiles&&f.profiles.email}</div>
+              <div style=${{fontSize:".72rem",color:"var(--tl)",marginBottom:"8px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>${f.user_email||f.user_id&&f.user_id.slice(0,8)+"..."}</div>
               <div style=${{fontSize:".68rem",color:"var(--tl)",marginBottom:"10px"}}>${new Date(f.created_at).toLocaleDateString("es-AR")}</div>
               <div style=${{display:"flex",gap:"6px"}}>
                 <button class=${"btn bsm flex-1 "+(f.publicada?"bo":"bs")} style=${{flex:1,justifyContent:"center"}} onClick=${()=>togglePublicar(f)}>
