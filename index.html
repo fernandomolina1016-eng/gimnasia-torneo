@@ -241,7 +241,7 @@ function useAuth(){
   const [loading,setLoading]=useState(true);
   const fetchProfile=useCallback(async function(u){
     if(!u){setProfile(null);setLoading(false);return;}
-    const res=await sb.from("profiles").select("*").eq("id",u.id).single();
+    const res=await sb.from("profiles").select("*").eq("id",u.id).maybeSingle();
     setProfile(res.data);setLoading(false);
   },[]);
   useEffect(function(){
@@ -279,7 +279,7 @@ function Modal({title,onClose,children,footer}){
 }
 
 function Confirm({msg,onOk,onNo}){
-  return html`<${Modal} title="Confirmar" onClose=${onNo} footer=${html`<><button class="btn bo" onClick=${onNo}>Cancelar</button><button class="btn bd" onClick=${onOk}>Eliminar</button></>`}><p style=${{color:"var(--ts)"}}>${msg}</p><//>`;
+  return html`<${Modal} title="Confirmar" onClose=${onNo} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${onNo}>Cancelar</button><button class="btn bd" onClick=${onOk}>Eliminar</button></div>`}><p style=${{color:"var(--ts)"}}>${msg}</p><//>`;
 }
 
 function AuthPage(){
@@ -340,7 +340,7 @@ function SimpleCRUD({title,table,fieldLabel,fieldKey}){
       ${items.map(i=>html`<tr key=${i.id}><td><strong>${i[fieldKey]}</strong></td><td style=${{color:"var(--tl)",fontSize:".8rem"}}>${new Date(i.created_at).toLocaleDateString("es-AR")}</td>
         <td><div style=${{display:"flex",gap:"6px"}}><button class="btn bo bsm" onClick=${()=>{setVal(String(i[fieldKey]));setErr("");setModal({mode:"edit",item:i});}}><${Ic} name="edit" size=${12}/></button><button class="btn bd bsm" onClick=${()=>setConf(i.id)}><${Ic} name="trash" size=${12}/></button></div></td></tr>`)}
     </tbody></table></div>`}</div>
-    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Agregar "+title:"Editar "+title} onClose=${()=>setModal(null)} footer=${html`<><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></>`}>
+    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Agregar "+title:"Editar "+title} onClose=${()=>setModal(null)} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></div>`}>
       ${err&&html`<${Alrt} type="error">${err}<//>` }
       <div class="fg"><label class="fl">${fieldLabel}</label><input class="fc" value=${val} onInput=${e=>setVal(e.target.value)} type=${(fieldKey==="numero"||fieldKey==="valor")?"number":"text"} onKeyDown=${e=>e.key==="Enter"&&save()} autoFocus/></div>
     <//>` }
@@ -366,7 +366,7 @@ function ParticipantesAdmin(){
           <td><div style=${{display:"flex",gap:"6px"}}><button class="btn bo bsm" onClick=${()=>{setForm({nombre:p.nombre,apellido:p.apellido,dni:p.dni,equipo_id:p.equipo_id,nivel_id:p.nivel_id,categoria_id:p.categoria_id,anio_id:p.anio_id});setErr("");setModal({mode:"edit",item:p});}}><${Ic} name="edit" size=${12}/></button><button class="btn bd bsm" onClick=${()=>setConf(p.id)}><${Ic} name="trash" size=${12}/></button></div></td></tr>`)}
       </tbody></table></div>`}
     </div>
-    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nueva Participante":"Editar Participante"} onClose=${()=>setModal(null)} footer=${html`<><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save} disabled=${sav}>${sav?"Guardando...":"Guardar"}</button></>`}>
+    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nueva Participante":"Editar Participante"} onClose=${()=>setModal(null)} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save} disabled=${sav}>${sav?"Guardando...":"Guardar"}</button></div>`}>
       ${err&&html`<${Alrt} type="error">${err}<//>` }
       <div class="fgrid">
         ${[["nombre","Nombre"],["apellido","Apellido"],["dni","DNI"]].map(([k,l])=>html`<div class="fg" key=${k}><label class="fl">${l}</label><input class="fc" value=${form[k]||""} onInput=${e=>{const v=e.target.value;setForm(f=>Object.assign({},f,{[k]:v}));}}/></div>`)}
@@ -470,7 +470,7 @@ function BannersAdmin(){
       ${items.map(b=>html`<tr key=${b.id}><td>${b.texto}</td><td style=${{fontSize:".75rem",color:"var(--tl)",maxWidth:"150px",overflow:"hidden",textOverflow:"ellipsis"}}>${b.imagen_url||"—"}</td><td>${b.orden}</td><td><span class=${"badge "+(b.activo?"bj":"bpub")}>${b.activo?"Activo":"Inactivo"}</span></td>
         <td><div style=${{display:"flex",gap:"6px"}}><button class="btn bo bsm" onClick=${()=>{setForm({texto:b.texto,imagen_url:b.imagen_url,orden:b.orden,activo:b.activo});setErr("");setModal({mode:"edit",item:b});}}><${Ic} name="edit" size=${12}/></button><button class="btn bd bsm" onClick=${()=>setConf(b.id)}><${Ic} name="trash" size=${12}/></button></div></td></tr>`)}
     </tbody></table></div>`}</div>
-    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nuevo Banner":"Editar Banner"} onClose=${()=>setModal(null)} footer=${html`<><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></>`}>
+    ${modal&&html`<${Modal} title=${modal.mode==="add"?"Nuevo Banner":"Editar Banner"} onClose=${()=>setModal(null)} footer=${html`<div style=${{display:"flex",gap:"8px"}}><button class="btn bo" onClick=${()=>setModal(null)}>Cancelar</button><button class="btn bg" onClick=${save}>Guardar</button></div>`}>
       ${err&&html`<${Alrt} type="error">${err}<//>` }
       <div class="fg"><label class="fl">Texto</label><textarea class="fc" value=${form.texto||""} onInput=${e=>{const v=e.target.value;setForm(f=>Object.assign({},f,{texto:v}));}}/></div>
       <div class="fg"><label class="fl">URL Imagen (opcional)</label><input class="fc" value=${form.imagen_url||""} onInput=${e=>{const v=e.target.value;setForm(f=>Object.assign({},f,{imagen_url:v}));}} placeholder="https://..."/></div>
