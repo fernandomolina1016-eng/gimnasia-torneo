@@ -241,7 +241,7 @@ function useAuth(){
   const [loading,setLoading]=useState(true);
   const fetchProfile=useCallback(async function(u){
     if(!u){setProfile(null);setLoading(false);return;}
-    const res=await sb.from("profiles").select("*").eq("id",u.id).maybeSingle();
+    const res=await sb.from("profiles").select("*").eq("id",u.id).single();
     setProfile(res.data);setLoading(false);
   },[]);
   useEffect(function(){
