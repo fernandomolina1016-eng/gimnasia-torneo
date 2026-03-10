@@ -402,7 +402,7 @@ function Calificaciones({profile}){
         ${filt.length===0&&html`<tr><td colSpan=${7}><div class="es">Sin participantes</div></td></tr>`}
         ${filt.map(p=>{const sc=scores[p.id]||{};const t=(parseFloat(sc.suelo)||0)+(parseFloat(sc.salto)||0)+(parseFloat(sc.viga)||0)+(parseFloat(sc.paralelas)||0);return html`<tr key=${p.id}>
           <td><div><strong>${p.apellido}, ${p.nombre}</strong></div><div style=${{fontSize:".75rem",color:"var(--tl)"}}>${p.equipos&&p.equipos.nombre} · N${p.niveles&&p.niveles.numero}</div></td>
-          ${discs.map(d=>html`<td key=${d}><input type="number" class="si" value=${sc[d]!=null?sc[d]:""} onInput=${e=>{const v=e.target.value;setScores(p=>{const c=p[p.id]||{};return Object.assign({},p,{[p.id]:Object.assign({},c,{[d]:v})});})}} min=${0} max=${10} step=${0.001}/></td>`)}
+          ${discs.map(d=>html`<td key=${d}><input type="number" class="si" value=${sc[d]!=null?sc[d]:""} onInput=${e=>{const v=e.target.value;setScores(prev=>{const c=prev[p.id]||{};return Object.assign({},prev,{[p.id]:Object.assign({},c,{[d]:v})});})}} min=${0} max=${10} step=${0.001}/></td>`)}
           <td><strong style=${{color:"var(--gold-dark)"}}>${t.toFixed(3)}</strong></td>
           <td>${msgMap[p.id]==="ok"?html`<span style=${{color:"var(--success)",fontSize:".8rem"}}>✓</span>`:msgMap[p.id]==="err"?html`<span style=${{color:"var(--danger)",fontSize:".8rem"}}>Error</span>`:html`<button class="btn bg bsm" onClick=${()=>saveCal(p.id)} disabled=${savMap[p.id]}>${savMap[p.id]?"...":"Guardar"}</button>`}</td>
         </tr>`;})}</tbody></table></div>`}
