@@ -616,7 +616,7 @@ function App(){
   return html`<div class="shell">
     <div class=${"sov "+(sbOpen?"vis":"")} onClick=${()=>setSbOpen(false)}/>
     <aside class=${"sb "+(sbOpen?"open":"")}>
-      <div class="sb-logo"><h1>🤸‍♀️ GimnasiaTorneo</h1><p>Gymnastic Tournament Manager</p></div>
+      <div class="sb-logo"><h1>🤸‍♀️ GimnasiaTorneo</h1><p>Plataforma de Torneos de Gimnasia Artística</p></div>
       <nav class="sb-nav">${vis.map(item=>{let secEl=null;if(item.sec&&item.sec!==lastSec){secEl=html`<div key=${"s-"+item.sec} class="sec-lbl">${item.sec}</div>`;lastSec=item.sec;}return html`<div key=${item.id}>${secEl}<div class=${"ni "+(page===item.id?"act":"")} onClick=${()=>{setPage(item.id);setSbOpen(false);}}><${Ic} name=${item.icon} size=${16}/>${item.label}</div></div>`;})}</nav>
       <div class="sb-foot"><div class="ubadge"><div class="uavatar">${ini}</div><div><div class="uemail">${user&&user.email}</div><div class="urole">${role}</div></div></div><button class="btn-out" onClick=${()=>sb.auth.signOut()}>Cerrar sesión</button></div>
     </aside>
