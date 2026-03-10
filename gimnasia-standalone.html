@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GimnasiaTorneo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#C9A84C;--gold-light:#E8C87A;--gold-dark:#9A7A2E;--navy:#0D1B2A;--navy-light:#243B55;--cream:#F5F0E8;--cream-dark:#EAE3D5;--tp:#0D1B2A;--ts:#4A6080;--tl:#8AA0BA;--danger:#D64045;--success:#2E9E6E;--white:#FFFFFF;--r:10px;--rl:16px}
+    body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--tp);min-height:100vh}
+    h1,h2,h3,h4{font-family:'Playfair Display',serif}
+    .shell{display:flex;min-height:100vh}
+    .sb{width:240px;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s;overflow-y:auto}
+    .sb-logo{padding:28px 20px 20px;border-bottom:1px solid rgba(201,168,76,.2)}
+    .sb-logo h1{font-size:1.1rem;color:var(--gold);line-height:1.2}
+    .sb-logo p{font-size:.72rem;color:var(--tl);margin-top:4px;letter-spacing:.08em;text-transform:uppercase}
+    .sb-nav{padding:16px 0;flex:1}
+    .sec-lbl{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tl);padding:12px 20px 6px}
+    .ni{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(245,240,232,.7);cursor:pointer;transition:all .15s;font-size:.875rem;border-left:3px solid transparent}
+    .ni:hover{background:rgba(201,168,76,.1);color:var(--cream)}
+    .ni.act{background:rgba(201,168,76,.15);color:var(--gold);border-left-color:var(--gold)}
+    .sb-foot{padding:16px 20px;border-top:1px solid rgba(201,168,76,.15)}
+    .ubadge{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .uavatar{width:36px;height:36px;border-radius:50%;background:var(--gold-dark);display:flex;align-items:center;justify-content:center;font-size:.875rem;color:var(--cream);font-weight:600;flex-shrink:0}
+    .uemail{font-size:.75rem;color:var(--tl);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .urole{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold)}
+    .btn-out{width:100%;padding:8px;background:rgba(214,64,69,.15);border:1px solid rgba(214,64,69,.3);color:#FF8A8D;border-radius:var(--r);cursor:pointer;font-size:.8rem;font-family:'DM Sans',sans-serif}
+    .btn-out:hover{background:rgba(214,64,69,.25)}
+    .mc{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{background:var(--white);border-bottom:1px solid var(--cream-dark);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .topbar-t{font-size:1.1rem;font-weight:600}
+    .pc{padding:28px;flex:1;max-width:1200px}
+    .card{background:var(--white);border-radius:var(--rl);box-shadow:0 1px 3px rgba(13,27,42,.08);border:1px solid var(--cream-dark)}
+    .ch{padding:20px 24px 16px;border-bottom:1px solid var(--cream-dark);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .ct{font-size:1.1rem;font-weight:700;color:var(--navy)}
+    .cb{padding:20px 24px}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);cursor:pointer;font-size:.875rem;font-weight:500;border:none;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+    .bp{background:var(--navy);color:var(--white)}.bp:hover{background:var(--navy-light)}
+    .bg{background:var(--gold);color:var(--navy)}.bg:hover{background:var(--gold-light)}
+    .bo{background:transparent;border:1.5px solid var(--cream-dark);color:var(--tp)}.bo:hover{background:var(--cream)}
+    .bd{background:var(--danger);color:white}.bd:hover{opacity:.85}
+    .bs{background:var(--success);color:white}
+    .bsm{padding:5px 10px;font-size:.8rem}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .fg{margin-bottom:16px}
+    .fl{display:block;font-size:.8rem;font-weight:500;color:var(--ts);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+    .fc{width:100%;padding:10px 14px;border:1.5px solid var(--cream-dark);border-radius:var(--r);font-size:.9rem;font-family:'DM Sans',sans-serif;color:var(--tp);background:var(--white);transition:border-color .15s;outline:none}
+    .fc:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+    .fc::placeholder{color:var(--tl)}
+    select.fc{cursor:pointer}
+    textarea.fc{resize:vertical;min-height:80px}
+    .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .tw{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    thead th{padding:10px 14px;text-align:left;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ts);background:var(--cream);border-bottom:2px solid var(--cream-dark);white-space:nowrap}
+    tbody td{padding:11px 14px;border-bottom:1px solid var(--cream-dark);font-size:.875rem;vertical-align:middle}
+    tbody tr:hover{background:rgba(201,168,76,.04)}
+    tbody tr:last-child td{border-bottom:none}
+    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+    .ba{background:rgba(201,168,76,.15);color:var(--gold-dark)}
+    .bj{background:rgba(46,158,110,.12);color:var(--success)}
+    .bpub{background:rgba(74,96,128,.12);color:var(--ts)}
+    .auth-page{min-height:100vh;display:flex;background:var(--navy);overflow:hidden}
+    .auth-l{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;position:relative}
+    .auth-l::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(201,168,76,.12) 0%,transparent 60%)}
+    .auth-deco{position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:200px;height:200px;border:2px solid rgba(201,168,76,.2);border-radius:50%}
+    .auth-deco2{position:absolute;right:-40px;top:50%;transform:translateY(-50%);width:120px;height:120px;border:1px solid rgba(201,168,76,.1);border-radius:50%}
+    .auth-r{width:440px;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px}
+    .auth-fw{width:100%}
+    .auth-tt{font-size:1.8rem;color:var(--navy);margin-bottom:4px}
+    .auth-st{font-size:.875rem;color:var(--ts);margin-bottom:28px}
+    .auth-fl{text-align:center;margin-top:20px;font-size:.85rem;color:var(--ts)}
+    .auth-fl span{color:var(--gold-dark);cursor:pointer;font-weight:600}
+    .alert{padding:12px 16px;border-radius:var(--r);font-size:.875rem;margin-bottom:16px;display:flex;align-items:flex-start;gap:8px}
+    .ae{background:rgba(214,64,69,.1);color:var(--danger);border:1px solid rgba(214,64,69,.2)}
+    .as{background:rgba(46,158,110,.1);color:var(--success);border:1px solid rgba(46,158,110,.2)}
+    .ai{background:rgba(201,168,76,.1);color:var(--gold-dark);border:1px solid rgba(201,168,76,.2)}
+    .mo{position:fixed;inset:0;background:rgba(13,27,42,.6);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+    .modal{background:var(--white);border-radius:var(--rl);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 12px 40px rgba(13,27,42,.18);animation:mi .2s ease}
+    @keyframes mi{from{opacity:0;transform:translateY(-16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .mh{padding:20px 24px 16px;border-bottom:1px solid var(--cream-dark);display:flex;align-items:center;justify-content:space-between}
+    .mt2{font-size:1.15rem}
+    .mc2{width:32px;height:32px;border:none;background:var(--cream);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts);transition:all .15s}
+    .mc2:hover{background:var(--cream-dark)}
+    .mb2{padding:24px}
+    .mf{padding:16px 24px;border-top:1px solid var(--cream-dark);display:flex;gap:8px;justify-content:flex-end}
+    .bc{position:relative;overflow:hidden;border-radius:var(--rl);height:140px;background:var(--navy);margin-bottom:24px}
+    .bsl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center;opacity:0;transition:opacity .6s}
+    .bsl.act{opacity:1}
+    .bsl h2{color:var(--gold);font-size:1.4rem}
+    .sr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px}
+    .sc{background:var(--white);border-radius:var(--rl);padding:20px;border:1px solid var(--cream-dark);text-align:center}
+    .sv{font-size:2rem;font-family:'Playfair Display',serif;color:var(--navy)}
+    .sl{font-size:.75rem;color:var(--ts);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+    .ham{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:4px}
+    .ham span{display:block;width:22px;height:2px;background:var(--navy);border-radius:2px}
+    .si{width:80px;padding:6px 10px;border:1.5px solid var(--cream-dark);border-radius:6px;font-size:.875rem;text-align:center}
+    .si:focus{outline:none;border-color:var(--gold)}
+    .fr{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    .fs{padding:7px 12px;border:1.5px solid var(--cream-dark);border-radius:8px;font-size:.85rem;font-family:'DM Sans',sans-serif;background:white;cursor:pointer}
+    .fs:focus{outline:none;border-color:var(--gold)}
+    .fb{background:none;border:none;cursor:pointer;color:var(--tl);transition:color .15s;padding:2px}
+    .fb:hover,.fb.act{color:var(--gold)}
+    .spin{width:32px;height:32px;border:3px solid var(--cream-dark);border-top-color:var(--gold);border-radius:50%;animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .lc{display:flex;align-items:center;justify-content:center;padding:60px}
+    .es{text-align:center;padding:40px 20px;color:var(--ts)}
+    .es p{margin-top:8px;font-size:.875rem}
+    .sov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+    .sov.vis{display:block}
+    .tp2{background:var(--navy);color:var(--cream);border-radius:var(--r);padding:16px;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;white-space:pre}
+    .rm{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+    .r1{background:var(--gold);color:var(--navy)}.r2{background:#C0C0C0;color:var(--navy)}.r3{background:#CD7F32;color:white}
+    @media(max-width:768px){
+      .sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)}
+      .mc{margin-left:0}.ham{display:flex}
+      .auth-l{display:none}.auth-r{width:100%}
+      .pc{padding:16px}.fgrid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+const SUPABASE_URL = "https://ngacvsjmeddnvwummala.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nYWN2c2ptZWRkbnZ3dW1tYWxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMzY2NDQsImV4cCI6MjA4NzgxMjY0NH0.N0_lNqdyx-vBRvnxUld3ekO5oeV34kQ_rl-fPFCX578";
+
+class SupabaseClient {
+  constructor(url, key) {
+    this.url = url; this.key = key; this.token = null; this.refreshToken = null; this.user = null; this._authListeners = [];
+    this._loadSession();
+  }
+  _loadSession() {
+    try { const s = localStorage.getItem("sb_session"); if (s) { const p = JSON.parse(s); this.token = p.token; this.refreshToken = p.refreshToken; this.user = p.user; } } catch(e) {}
+  }
+  _saveSession(token, refreshToken, user) {
+    this.token = token; this.refreshToken = refreshToken; this.user = user;
+    if (token) localStorage.setItem("sb_session", JSON.stringify({ token, refreshToken, user }));
+    else localStorage.removeItem("sb_session");
+    this._authListeners.forEach(fn => fn(user));
+  }
+  onAuthStateChange(fn) { this._authListeners.push(fn); return { unsubscribe: () => { this._authListeners = this._authListeners.filter(f => f !== fn); } }; }
+  async _fetch(path, options = {}) {
+    const headers = { "Content-Type": "application/json", apikey: this.key, ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}), ...options.headers };
+    const res = await fetch(`${this.url}${path}`, { ...options, headers });
+    const text = await res.text();
+    let data; try { data = JSON.parse(text); } catch(e) { data = text; }
+    if (!res.ok) throw new Error((data && data.message) || (data && data.error_description) || JSON.stringify(data));
+    return data;
+  }
+  from(table) { return new QueryBuilder(this, table); }
+}
+
+function makeAuth(client) {
+  return {
+    signUp: (creds) => client._fetch("/auth/v1/signup", { method: "POST", body: JSON.stringify({ email: creds.email, password: creds.password }) }),
+    signInWithPassword: async (creds) => {
+      const data = await client._fetch("/auth/v1/token?grant_type=password", { method: "POST", body: JSON.stringify({ email: creds.email, password: creds.password }) });
+      client._saveSession(data.access_token, data.refresh_token, data.user);
+      return { data, error: null };
+    },
+    signOut: async () => { try { await client._fetch("/auth/v1/logout", { method: "POST" }); } catch(e) {} client._saveSession(null, null, null); },
+    resetPasswordForEmail: (email) => client._fetch("/auth/v1/recover", { method: "POST", body: JSON.stringify({ email }) }),
+    getUser: () => client.user,
+  };
+}
+
+class QueryBuilder {
+  constructor(client, table) { this.client=client; this.table=table; this._params={}; this._select="*"; this._order=null; this._body=null; this._method="GET"; this._filters=[]; this._single=false; this._limit=null; this._headers={}; }
+  select(cols) { this._select = cols||"*"; return this; }
+  order(col, opts) { const asc=(!opts||opts.ascending!==false); this._order=col+"."+(asc?"asc":"desc"); return this; }
+  limit(n) { this._limit=n; return this; }
+  single() { this._single=true; this._headers["Accept"]="application/vnd.pgrst.object+json"; return this; }
+  maybeSingle() { this._single=true; return this; }
+  eq(col, val) { this._filters.push(col+"=eq."+encodeURIComponent(val)); return this; }
+  in(col, vals) { this._filters.push(col+"=in.("+vals.map(v=>encodeURIComponent(v)).join(",")+")" ); return this; }
+  insert(data) { this._method="POST"; this._body=data; return this; }
+  update(data) { this._method="PATCH"; this._body=data; return this; }
+  upsert(data, opts={}) { this._method="POST"; this._body=data; this._headers["Prefer"]=opts.onConflict?"resolution=merge-duplicates,return=representation":"return=representation"; if(opts.onConflict) this._params.on_conflict=opts.onConflict; return this; }
+  delete() { this._method="DELETE"; return this; }
+  async _build() {
+    const qs=new URLSearchParams();
+    if(this._method==="GET"||this._method==="DELETE") qs.set("select",this._select);
+    if(this._order) qs.set("order",this._order);
+    if(this._limit) qs.set("limit",this._limit);
+    this._filters.forEach(f=>{ const idx=f.indexOf("="); qs.set(f.slice(0,idx),decodeURIComponent(f.slice(idx+1))); });
+    for(const k in this._params) qs.set(k,this._params[k]);
+    const options={ method:this._method, headers:{ ...this._headers, ...((this._method==="POST"||this._method==="PATCH")?{Prefer:this._headers["Prefer"]||"return=representation"}:{}) } };
+    if(this._body) options.body=JSON.stringify(this._body);
+    try { const data=await this.client._fetch("/rest/v1/"+this.table+"?"+qs.toString(),options); return { data:this._single?(Array.isArray(data)?data[0]:data):data, error:null }; }
+    catch(e) { return { data:null, error:{message:e.message} }; }
+  }
+  then(resolve, reject) { return this._build().then(resolve, reject); }
+}
+
+const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+supabase.auth = makeAuth(supabase);
+
+function Ic({ name, size=16 }) {
+  const ic = {
+    home:<path d="M3 12L12 3l9 9M5 10v10h5v-6h4v6h5V10"/>,
+    users:<><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></>,
+    trophy:<><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></>,
+    star:<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>,
+    plus:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    edit:<><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+    trash:<><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></>,
+    download:<><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+    upload:<><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
+    x:<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    check:<polyline points="20 6 9 17 4 12"/>,
+    list:<><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>,
+    "bar-chart":<><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
+    image:<><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></>,
+    tag:<><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></>,
+    heart:<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>,
+    "heart-filled":<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="currentColor"/>,
+    lock:<><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></>,
+    award:<><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">{ic[name]||null}</svg>;
+}
+
+function useAuth() {
+  const [user, setUser] = useState(supabase.user);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const fetchProfile = useCallback(async (u) => {
+    if (!u) { setProfile(null); setLoading(false); return; }
+    const res = await supabase.from("profiles").select("*").eq("id", u.id).maybeSingle();
+    setProfile(res.data); setLoading(false);
+  }, []);
+  useEffect(() => {
+    fetchProfile(supabase.user);
+    const sub = supabase.onAuthStateChange((u) => { setUser(u); fetchProfile(u); });
+    return sub.unsubscribe;
+  }, [fetchProfile]);
+  return { user, profile, loading };
+}
+
+const Alrt = ({ type="error", children }) => (
+  <div className={`alert ${type==="error"?"ae":type==="success"?"as":"ai"}`}>
+    <Ic name={type==="error"?"x":type==="success"?"check":"star"} size={14}/>{children}
+  </div>
+);
+const Spin = () => <div className="lc"><div className="spin"/></div>;
+
+function Modal({ title, onClose, children, footer }) {
+  return (
+    <div className="mo" onClick={e => e.target===e.currentTarget&&onClose()}>
+      <div className="modal">
+        <div className="mh"><h3 className="mt2">{title}</h3><button className="mc2" onClick={onClose}><Ic name="x" size={14}/></button></div>
+        <div className="mb2">{children}</div>
+        {footer&&<div className="mf">{footer}</div>}
+      </div>
+    </div>
+  );
+}
+
+function Confirm({ msg, onOk, onNo }) {
+  return <Modal title="Confirmar" onClose={onNo} footer={<><button className="btn bo" onClick={onNo}>Cancelar</button><button className="btn bd" onClick={onOk}>Eliminar</button></>}><p style={{color:"var(--ts)"}}>{msg}</p></Modal>;
+}
+
+function AuthPage() {
+  const [view, setView] = useState("login");
+  const [email, setEmail] = useState(""); const [pw, setPw] = useState("");
+  const [err, setErr] = useState(""); const [ok, setOk] = useState(""); const [ld, setLd] = useState(false);
+  const login = async () => { setErr(""); setLd(true); try { await supabase.auth.signInWithPassword({ email, password: pw }); } catch(e) { setErr(e.message); } setLd(false); };
+  const register = async () => { setErr(""); setLd(true); try { await supabase.auth.signUp({ email, password: pw }); setOk("¡Cuenta creada! Ya podés iniciar sesión."); setView("login"); } catch(e) { setErr(e.message); } setLd(false); };
+  const forgot = async () => { setErr(""); setLd(true); try { await supabase.auth.resetPasswordForEmail(email); setOk("Revisá tu email para restablecer la contraseña."); } catch(e) { setErr(e.message); } setLd(false); };
+  return (
+    <div className="auth-page">
+      <div className="auth-l">
+        <div className="auth-deco"/><div className="auth-deco2"/>
+        <div style={{position:"relative",textAlign:"center"}}>
+          <div style={{fontSize:"3rem"}}>🤸‍♀️</div>
+          <h1 style={{fontSize:"2.2rem",marginTop:"12px",color:"var(--gold)",fontFamily:"Playfair Display,serif"}}>GimnasiaTorneo</h1>
+          <p style={{color:"var(--tl)",marginTop:"12px",fontSize:".9rem",letterSpacing:".1em",textTransform:"uppercase"}}>Plataforma de Torneos de Gimnasia Artística</p>
+          <div style={{marginTop:"32px",display:"flex",gap:"16px",justifyContent:"center",flexWrap:"wrap"}}>
+            {["Gestión de Participantes","Puntajes en Tiempo Real","Rankings Automáticos"].map(f=>(
+              <div key={f} style={{background:"rgba(201,168,76,.1)",border:"1px solid rgba(201,168,76,.2)",borderRadius:"8px",padding:"8px 14px",color:"var(--gold)",fontSize:".8rem"}}>{f}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="auth-r">
+        <div className="auth-fw">
+          {view==="login"&&<>
+            <h2 className="auth-tt">Bienvenida</h2><p className="auth-st">Ingresá a tu cuenta para continuar</p>
+            {err&&<Alrt type="error">{err}</Alrt>}{ok&&<Alrt type="success">{ok}</Alrt>}
+            <div className="fg"><label className="fl">Email</label><input className="fc" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@email.com" onKeyDown={e=>e.key==="Enter"&&login()}/></div>
+            <div className="fg"><label className="fl">Contraseña</label><input className="fc" type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==="Enter"&&login()}/></div>
+            <div style={{textAlign:"right",marginBottom:"16px"}}><span style={{fontSize:".8rem",color:"var(--gold-dark)",cursor:"pointer"}} onClick={()=>{setErr("");setOk("");setView("forgot")}}>¿Olvidaste tu contraseña?</span></div>
+            <button className="btn bp" style={{width:"100%",padding:"12px"}} onClick={login} disabled={ld}>{ld?"Ingresando...":"Ingresar"}</button>
+            <div className="auth-fl">¿No tenés cuenta? <span onClick={()=>{setErr("");setOk("");setView("register")}}>Registrate</span></div>
+          </>}
+          {view==="register"&&<>
+            <h2 className="auth-tt">Crear cuenta</h2><p className="auth-st">Completá tus datos para registrarte</p>
+            {err&&<Alrt type="error">{err}</Alrt>}
+            <div className="fg"><label className="fl">Email</label><input className="fc" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@email.com"/></div>
+            <div className="fg"><label className="fl">Contraseña</label><input className="fc" type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="Mínimo 6 caracteres"/></div>
+            <button className="btn bg" style={{width:"100%",padding:"12px"}} onClick={register} disabled={ld}>{ld?"Creando cuenta...":"Crear cuenta"}</button>
+            <div className="auth-fl">¿Ya tenés cuenta? <span onClick={()=>{setErr("");setView("login")}}>Iniciar sesión</span></div>
+          </>}
+          {view==="forgot"&&<>
+            <h2 className="auth-tt">Recuperar contraseña</h2><p className="auth-st">Te enviaremos un link al email</p>
+            {err&&<Alrt type="error">{err}</Alrt>}{ok&&<Alrt type="success">{ok}</Alrt>}
+            <div className="fg"><label className="fl">Email</label><input className="fc" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@email.com"/></div>
+            <button className="btn bg" style={{width:"100%",padding:"12px"}} onClick={forgot} disabled={ld}>{ld?"Enviando...":"Enviar link"}</button>
+            <div className="auth-fl"><span onClick={()=>setView("login")}>← Volver al login</span></div>
+          </>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function useCrud(table, sel="*") {
+  const [items,setItems]=useState([]); const [loading,setLoading]=useState(false);
+  const load=useCallback(async()=>{setLoading(true);const res=await supabase.from(table).select(sel).order("created_at",{ascending:false});setItems(res.data||[]);setLoading(false);},[table,sel]);
+  const create=async b=>{const res=await supabase.from(table).insert(b);if(res.error)throw new Error(res.error.message);await load();};
+  const update=async(id,b)=>{const res=await supabase.from(table).update(b).eq("id",id);if(res.error)throw new Error(res.error.message);await load();};
+  const remove=async id=>{const res=await supabase.from(table).delete().eq("id",id);if(res.error)throw new Error(res.error.message);await load();};
+  return{items,loading,load,create,update,remove};
+}
+
+function SimpleCRUD({title,table,fieldLabel,fieldKey}) {
+  const{items,loading,load,create,update,remove}=useCrud(table);
+  const[modal,setModal]=useState(null);const[val,setVal]=useState("");const[conf,setConf]=useState(null);const[err,setErr]=useState("");
+  useEffect(()=>{load();},[load]);
+  const save=async()=>{setErr("");if(!val.trim()){setErr("Campo requerido");return;}try{const isNum=fieldKey==="numero"||fieldKey==="valor";const v=isNum?parseInt(val):val;if(modal.mode==="add")await create({[fieldKey]:v});else await update(modal.item.id,{[fieldKey]:v});setModal(null);}catch(e){setErr(e.message);}};
+  return(<div>
+    <div className="ch"><h3 className="ct">{title}</h3><button className="btn bg" onClick={()=>{setVal("");setErr("");setModal({mode:"add"});}}><Ic name="plus" size={14}/>Agregar</button></div>
+    <div className="cb">{loading?<Spin/>:(<div className="tw"><table><thead><tr><th>{fieldLabel}</th><th>Creado</th><th></th></tr></thead><tbody>
+      {items.length===0&&<tr><td colSpan={3}><div className="es">Sin registros</div></td></tr>}
+      {items.map(i=><tr key={i.id}><td><strong>{i[fieldKey]}</strong></td><td style={{color:"var(--tl)",fontSize:".8rem"}}>{new Date(i.created_at).toLocaleDateString("es-AR")}</td>
+        <td><div style={{display:"flex",gap:"6px"}}><button className="btn bo bsm" onClick={()=>{setVal(String(i[fieldKey]));setErr("");setModal({mode:"edit",item:i});}}><Ic name="edit" size={12}/></button><button className="btn bd bsm" onClick={()=>setConf(i.id)}><Ic name="trash" size={12}/></button></div></td></tr>)}
+    </tbody></table></div>)}</div>
+    {modal&&<Modal title={modal.mode==="add"?`Agregar ${title}`:`Editar ${title}`} onClose={()=>setModal(null)} footer={<><button className="btn bo" onClick={()=>setModal(null)}>Cancelar</button><button className="btn bg" onClick={save}>Guardar</button></>}>
+      {err&&<Alrt type="error">{err}</Alrt>}
+      <div className="fg"><label className="fl">{fieldLabel}</label><input className="fc" value={val} onChange={e=>setVal(e.target.value)} type={(fieldKey==="numero"||fieldKey==="valor")?"number":"text"} onKeyDown={e=>e.key==="Enter"&&save()} autoFocus/></div>
+    </Modal>}
+    {conf&&<Confirm msg="¿Eliminar este registro?" onOk={async()=>{await remove(conf);setConf(null);}} onNo={()=>setConf(null)}/>}
+  </div>);
+}
+
+function ParticipantesAdmin() {
+  const{items:parts,loading,load}=useCrud("participantes","*, equipos(nombre), niveles(numero), categorias(nombre), anios(valor)");
+  const[eq,setEq]=useState([]);const[nv,setNv]=useState([]);const[ct,setCt]=useState([]);const[an,setAn]=useState([]);
+  const[modal,setModal]=useState(null);const[form,setForm]=useState({});const[conf,setConf]=useState(null);const[err,setErr]=useState("");const[sav,setSav]=useState(false);const[q,setQ]=useState("");
+  useEffect(()=>{load();Promise.all([supabase.from("equipos").select("*").order("nombre"),supabase.from("niveles").select("*").order("numero"),supabase.from("categorias").select("*").order("nombre"),supabase.from("anios").select("*").order("valor")]).then(([e,n,c,a])=>{setEq(e.data||[]);setNv(n.data||[]);setCt(c.data||[]);setAn(a.data||[]);});},[load]);
+  const save=async()=>{setErr("");setSav(true);try{if(!form.nombre||!form.apellido||!form.dni)throw new Error("Nombre, apellido y DNI son obligatorios");if(modal.mode==="add")await supabase.from("participantes").insert(form);else await supabase.from("participantes").update(form).eq("id",modal.item.id);await load();setModal(null);}catch(e){setErr(e.message);}setSav(false);};
+  const filt=parts.filter(p=>`${p.nombre} ${p.apellido} ${p.dni}`.toLowerCase().includes(q.toLowerCase()));
+  return(<div>
+    <div className="ch"><h3 className="ct">Participantes</h3><button className="btn bg" onClick={()=>{setForm({});setErr("");setModal({mode:"add"});}}><Ic name="plus" size={14}/>Agregar</button></div>
+    <div className="cb">
+      <div style={{marginBottom:"12px"}}><input className="fc" placeholder="Buscar nombre, apellido o DNI..." value={q} onChange={e=>setQ(e.target.value)}/></div>
+      {loading?<Spin/>:<div className="tw"><table><thead><tr><th>Apellido y Nombre</th><th>DNI</th><th>Equipo</th><th>Nivel</th><th>Categoría</th><th>Año</th><th></th></tr></thead><tbody>
+        {filt.length===0&&<tr><td colSpan={7}><div className="es">Sin participantes</div></td></tr>}
+        {filt.map(p=><tr key={p.id}><td><strong>{p.apellido}, {p.nombre}</strong></td><td style={{fontFamily:"monospace"}}>{p.dni}</td><td>{p.equipos?.nombre||"—"}</td><td>{p.niveles?`N${p.niveles.numero}`:"—"}</td><td>{p.categorias?.nombre||"—"}</td><td>{p.anios?.valor||"—"}</td>
+          <td><div style={{display:"flex",gap:"6px"}}><button className="btn bo bsm" onClick={()=>{setForm({nombre:p.nombre,apellido:p.apellido,dni:p.dni,equipo_id:p.equipo_id,nivel_id:p.nivel_id,categoria_id:p.categoria_id,anio_id:p.anio_id});setErr("");setModal({mode:"edit",item:p});}}><Ic name="edit" size={12}/></button><button className="btn bd bsm" onClick={()=>setConf(p.id)}><Ic name="trash" size={12}/></button></div></td></tr>)}
+      </tbody></table></div>}
+    </div>
+    {modal&&<Modal title={modal.mode==="add"?"Nueva Participante":"Editar Participante"} onClose={()=>setModal(null)} footer={<><button className="btn bo" onClick={()=>setModal(null)}>Cancelar</button><button className="btn bg" onClick={save} disabled={sav}>{sav?"Guardando...":"Guardar"}</button></>}>
+      {err&&<Alrt type="error">{err}</Alrt>}
+      <div className="fgrid">
+        {[["nombre","Nombre"],["apellido","Apellido"],["dni","DNI"]].map(([k,l])=><div className="fg" key={k}><label className="fl">{l}</label><input className="fc" value={form[k]||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,[k]:v}));}}/></div>)}
+        <div className="fg"><label className="fl">Equipo</label><select className="fc" value={form.equipo_id||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,equipo_id:v}));}}><option value="">Seleccionar...</option>{eq.map(x=><option key={x.id} value={x.id}>{x.nombre}</option>)}</select></div>
+        <div className="fg"><label className="fl">Nivel</label><select className="fc" value={form.nivel_id||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,nivel_id:v}));}}><option value="">Seleccionar...</option>{nv.map(x=><option key={x.id} value={x.id}>Nivel {x.numero}</option>)}</select></div>
+        <div className="fg"><label className="fl">Categoría</label><select className="fc" value={form.categoria_id||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,categoria_id:v}));}}><option value="">Seleccionar...</option>{ct.map(x=><option key={x.id} value={x.id}>{x.nombre}</option>)}</select></div>
+        <div className="fg"><label className="fl">Año</label><select className="fc" value={form.anio_id||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,anio_id:v}));}}><option value="">Seleccionar...</option>{an.map(x=><option key={x.id} value={x.id}>{x.valor}</option>)}</select></div>
+      </div>
+    </Modal>}
+    {conf&&<Confirm msg="¿Eliminar esta participante?" onOk={async()=>{await supabase.from("participantes").delete().eq("id",conf);await load();setConf(null);}} onNo={()=>setConf(null)}/>}
+  </div>);
+}
+
+function Calificaciones({profile}) {
+  const[parts,setParts]=useState([]);const[cals,setCals]=useState({});const[ld,setLd]=useState(true);
+  const[savMap,setSavMap]=useState({});const[msgMap,setMsgMap]=useState({});const[scores,setScores]=useState({});
+  const[fil,setFil]=useState({equipo:"",nivel:"",categoria:"",anio:""});
+  const[eq,setEq]=useState([]);const[nv,setNv]=useState([]);const[ct,setCt]=useState([]);const[an,setAn]=useState([]);
+  useEffect(()=>{(async()=>{setLd(true);const[p,c,e,n,cat,a]=await Promise.all([supabase.from("participantes").select("*, equipos(nombre), niveles(numero), categorias(nombre), anios(valor)").order("apellido"),supabase.from("calificaciones").select("*"),supabase.from("equipos").select("*").order("nombre"),supabase.from("niveles").select("*").order("numero"),supabase.from("categorias").select("*").order("nombre"),supabase.from("anios").select("*").order("valor")]);setParts(p.data||[]);const cm={},sm={};(c.data||[]).forEach(x=>{cm[x.participante_id]=x;sm[x.participante_id]={suelo:x.suelo,salto:x.salto,viga:x.viga,paralelas:x.paralelas};});setCals(cm);setScores(sm);setEq(e.data||[]);setNv(n.data||[]);setCt(cat.data||[]);setAn(a.data||[]);setLd(false);})();},[]);
+  const filt=parts.filter(p=>{if(fil.equipo&&p.equipo_id!==fil.equipo)return false;if(fil.nivel&&p.nivel_id!==fil.nivel)return false;if(fil.categoria&&p.categoria_id!==fil.categoria)return false;if(fil.anio&&p.anio_id!==fil.anio)return false;return true;});
+  const saveCal=async pid=>{
+    setSavMap(prev=>({...prev,[pid]:true}));
+    const sc=scores[pid]||{};
+    const total=(parseFloat(sc.suelo)||0)+(parseFloat(sc.salto)||0)+(parseFloat(sc.viga)||0)+(parseFloat(sc.paralelas)||0);
+    const pl={participante_id:pid,suelo:parseFloat(sc.suelo)||0,salto:parseFloat(sc.salto)||0,viga:parseFloat(sc.viga)||0,paralelas:parseFloat(sc.paralelas)||0,total,juez_id:profile?.id};
+    try{if(cals[pid])await supabase.from("calificaciones").update(pl).eq("participante_id",pid);else await supabase.from("calificaciones").insert(pl);setCals(prev=>({...prev,[pid]:pl}));setMsgMap(prev=>({...prev,[pid]:"ok"}));setTimeout(()=>setMsgMap(prev=>{const n={...prev};delete n[pid];return n;}),2000);}catch(e){setMsgMap(prev=>({...prev,[pid]:"err"}));}
+    setSavMap(prev=>({...prev,[pid]:false}));
+  };
+  const filterSets=[["equipo",eq,"nombre","Equipo"],["nivel",nv,"numero","Nivel"],["categoria",ct,"nombre","Categoría"],["anio",an,"valor","Año"]];
+  return(<div>
+    <div className="ch"><h3 className="ct">Calificaciones por Disciplina</h3></div>
+    <div className="cb">
+      <div className="fr">{filterSets.map(([k,o,vk,lb])=><select key={k} className="fs" value={fil[k]} onChange={e=>{const v=e.target.value;setFil(prev=>({...prev,[k]:v}));}}><option value="">Todos {lb}s</option>{o.map(x=><option key={x.id} value={x.id}>{vk==="numero"?`Nivel ${x[vk]}`:x[vk]}</option>)}</select>)}</div>
+      {ld?<Spin/>:<div className="tw"><table><thead><tr><th>Participante</th><th>Suelo</th><th>Salto</th><th>Viga</th><th>Paralelas</th><th>Total</th><th></th></tr></thead><tbody>
+        {filt.length===0&&<tr><td colSpan={7}><div className="es">Sin participantes</div></td></tr>}
+        {filt.map(p=>{const sc=scores[p.id]||{};const t=(parseFloat(sc.suelo)||0)+(parseFloat(sc.salto)||0)+(parseFloat(sc.viga)||0)+(parseFloat(sc.paralelas)||0);return(<tr key={p.id}>
+          <td><div><strong>{p.apellido}, {p.nombre}</strong></div><div style={{fontSize:".75rem",color:"var(--tl)"}}>{p.equipos?.nombre} · N{p.niveles?.numero}</div></td>
+          {["suelo","salto","viga","paralelas"].map(d=><td key={d}><input type="number" className="si" value={sc[d]!=null?sc[d]:""} onChange={e=>{const v=e.target.value;setScores(prev=>{const cur=prev[p.id]||{};return{...prev,[p.id]:{...cur,[d]:v}};})}} min={0} max={10} step={0.001}/></td>)}
+          <td><strong style={{color:"var(--gold-dark)"}}>{t.toFixed(3)}</strong></td>
+          <td>{msgMap[p.id]==="ok"?<span style={{color:"var(--success)",fontSize:".8rem"}}>✓</span>:msgMap[p.id]==="err"?<span style={{color:"var(--danger)",fontSize:".8rem"}}>Error</span>:<button className="btn bg bsm" onClick={()=>saveCal(p.id)} disabled={savMap[p.id]}>{savMap[p.id]?"...":"Guardar"}</button>}</td>
+        </tr>);})}
+      </tbody></table></div>}
+    </div>
+  </div>);
+}
+
+function Ranking() {
+  const[data,setData]=useState([]);const[ld,setLd]=useState(true);const[fil,setFil]=useState({equipo:"",nivel:"",categoria:"",anio:""});
+  const[eq,setEq]=useState([]);const[nv,setNv]=useState([]);const[ct,setCt]=useState([]);const[an,setAn]=useState([]);
+  useEffect(()=>{(async()=>{const[p,c,e,n,cat,a]=await Promise.all([supabase.from("participantes").select("*, equipos(nombre), niveles(numero), categorias(nombre), anios(valor)"),supabase.from("calificaciones").select("*"),supabase.from("equipos").select("*").order("nombre"),supabase.from("niveles").select("*").order("numero"),supabase.from("categorias").select("*").order("nombre"),supabase.from("anios").select("*").order("valor")]);const cm={};(c.data||[]).forEach(x=>{cm[x.participante_id]=x;});setData((p.data||[]).map(x=>({...x,cal:cm[x.id]||null})));setEq(e.data||[]);setNv(n.data||[]);setCt(cat.data||[]);setAn(a.data||[]);setLd(false);})();},[]);
+  const filt=data.filter(p=>{if(fil.equipo&&p.equipo_id!==fil.equipo)return false;if(fil.nivel&&p.nivel_id!==fil.nivel)return false;if(fil.categoria&&p.categoria_id!==fil.categoria)return false;if(fil.anio&&p.anio_id!==fil.anio)return false;return true;}).sort((a,b)=>((b.cal?.total||0)-(a.cal?.total||0)));
+  const filterSets=[["equipo",eq,"nombre","Equipo"],["nivel",nv,"numero","Nivel"],["categoria",ct,"nombre","Categoría"],["anio",an,"valor","Año"]];
+  return(<div>
+    <div className="ch"><h3 className="ct">Ranking</h3></div>
+    <div className="cb">
+      <div className="fr">{filterSets.map(([k,o,vk,lb])=><select key={k} className="fs" value={fil[k]} onChange={e=>{const v=e.target.value;setFil(prev=>({...prev,[k]:v}));}}><option value="">Todos {lb}s</option>{o.map(x=><option key={x.id} value={x.id}>{vk==="numero"?`Nivel ${x[vk]}`:x[vk]}</option>)}</select>)}</div>
+      {ld?<Spin/>:<div className="tw"><table><thead><tr><th>Pos.</th><th>Participante</th><th>Equipo</th><th>Niv.</th><th>Cat.</th><th>Suelo</th><th>Salto</th><th>Viga</th><th>Paralelas</th><th>Total</th></tr></thead><tbody>
+        {filt.length===0&&<tr><td colSpan={10}><div className="es">Sin datos</div></td></tr>}
+        {filt.map((p,i)=><tr key={p.id}><td>{i<3?<span className={`rm r${i+1}`}>{i+1}</span>:<span style={{color:"var(--tl)",fontFamily:"monospace"}}>{i+1}</span>}</td><td><strong>{p.apellido}, {p.nombre}</strong></td><td>{p.equipos?.nombre||"—"}</td><td>N{p.niveles?.numero||"—"}</td><td>{p.categorias?.nombre||"—"}</td><td>{p.cal?.suelo?.toFixed(3)||"—"}</td><td>{p.cal?.salto?.toFixed(3)||"—"}</td><td>{p.cal?.viga?.toFixed(3)||"—"}</td><td>{p.cal?.paralelas?.toFixed(3)||"—"}</td><td><strong style={{color:"var(--gold-dark)"}}>{p.cal?.total?.toFixed(3)||"0.000"}</strong></td></tr>)}
+      </tbody></table></div>}
+    </div>
+  </div>);
+}
+
+function ImportTxt({onDone}) {
+  const[prev,setPrev]=useState("");const[parsed,setParsed]=useState([]);const[eq,setEq]=useState([]);const[nv,setNv]=useState([]);const[ct,setCt]=useState([]);const[an,setAn]=useState([]);const[ld,setLd]=useState(false);const[res,setRes]=useState(null);const ref=useRef();
+  useEffect(()=>{Promise.all([supabase.from("equipos").select("*"),supabase.from("niveles").select("*"),supabase.from("categorias").select("*"),supabase.from("anios").select("*")]).then(([e,n,c,a])=>{setEq(e.data||[]);setNv(n.data||[]);setCt(c.data||[]);setAn(a.data||[]);});},[]);
+  const onFile=file=>{const r=new FileReader();r.onload=e=>{const t=e.target.result;setPrev(t.slice(0,500));setParsed(t.trim().split("\n").filter(Boolean).map(l=>{const p=l.split(/[,;\t]+/).map(x=>x.trim());return{nombre:p[0]||"",apellido:p[1]||"",dni:p[2]||"",equipo:p[3]||"",nivel:p[4]||"",categoria:p[5]||"",anio:p[6]||""};}))} ;r.readAsText(file);};
+  const imp=async()=>{setLd(true);let ok=0,er=0;for(const row of parsed){const e=eq.find(x=>x.nombre.toLowerCase()===row.equipo.toLowerCase());const n=nv.find(x=>String(x.numero)===row.nivel);const c=ct.find(x=>x.nombre.toLowerCase()===row.categoria.toLowerCase());const a=an.find(x=>String(x.valor)===row.anio);try{await supabase.from("participantes").upsert({nombre:row.nombre,apellido:row.apellido,dni:row.dni,equipo_id:e?.id||null,nivel_id:n?.id||null,categoria_id:c?.id||null,anio_id:a?.id||null},{onConflict:"dni"});ok++;}catch(err){er++;}}setRes({ok,er});setLd(false);};
+  return(<div>
+    <div className="ch"><h3 className="ct">Importar TXT</h3></div>
+    <div className="cb">
+      <div className="alert ai" style={{marginBottom:"16px"}}><Ic name="upload" size={14}/>Formato: <strong>Nombre, Apellido, DNI, Equipo, Nivel, Categoría, Año</strong></div>
+      <input ref={ref} type="file" accept=".txt,.csv" style={{display:"none"}} onChange={e=>e.target.files[0]&&onFile(e.target.files[0])}/>
+      <button className="btn bo" onClick={()=>ref.current.click()}><Ic name="upload" size={14}/>Seleccionar archivo</button>
+      {prev&&<><div className="fg" style={{marginTop:"16px"}}><label className="fl">Previsualización</label><div className="tp2">{prev}</div></div>
+        <div className="alert ai" style={{marginTop:"8px"}}><Ic name="list" size={14}/>{parsed.length} registros detectados</div>
+        {res&&<div className={`alert ${res.er===0?"as":"ae"}`}><Ic name={res.er===0?"check":"x"} size={14}/>Importados: {res.ok} · Errores: {res.er}</div>}
+        <div style={{display:"flex",gap:"8px",marginTop:"16px"}}>
+          <button className="btn bg" onClick={imp} disabled={ld||!parsed.length}>{ld?`Importando...`:`Importar ${parsed.length} registros`}</button>
+          {res&&<button className="btn bs" onClick={onDone}><Ic name="check" size={14}/>Ver participantes</button>}
+        </div>
+      </>}
+    </div>
+  </div>);
+}
+
+function ExportExcel() {
+  const[ld,setLd]=useState(false);const[msg,setMsg]=useState("");
+  const exp=async()=>{setLd(true);const[p,c]=await Promise.all([supabase.from("participantes").select("*, equipos(nombre), niveles(numero), categorias(nombre), anios(valor)").order("apellido"),supabase.from("calificaciones").select("*")]);const cm={};(c.data||[]).forEach(x=>{cm[x.participante_id]=x;});const g={};(p.data||[]).forEach(x=>{const k=`${x.categorias?.nombre||"?"} - Nivel ${x.niveles?.numero||"?"} - ${x.anios?.valor||"?"}`;if(!g[k])g[k]=[];g[k].push(x);});Object.keys(g).forEach(k=>{g[k].sort((a,b)=>(cm[b.id]?.total||0)-(cm[a.id]?.total||0));});let csv="NOMBRE,APELLIDO,DNI,EQUIPO,NIVEL,CATEGORÍA,AÑO,SUELO,SALTO,VIGA,PARALELAS,TOTAL,POSICIÓN\n";Object.entries(g).forEach(([k,ps])=>{csv+=`\n### ${k} ###\n`;ps.forEach((x,i)=>{const cal=cm[x.id];csv+=`${x.nombre},${x.apellido},${x.dni},${x.equipos?.nombre||""},${x.niveles?.numero||""},${x.categorias?.nombre||""},${x.anios?.valor||""},${cal?.suelo||0},${cal?.salto||0},${cal?.viga||0},${cal?.paralelas||0},${cal?.total||0},${i+1}\n`;});});const b=new Blob([csv],{type:"text/csv;charset=utf-8;"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=`torneo_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(u);setMsg("¡Exportado!");setLd(false);};
+  return(<div><div className="ch"><h3 className="ct">Exportar CSV</h3></div><div className="cb"><p style={{color:"var(--ts)",marginBottom:"20px"}}>Descargá el listado completo con puntajes, ranking y posiciones por grupo.</p>{msg&&<Alrt type="success">{msg}</Alrt>}<button className="btn bg" onClick={exp} disabled={ld}><Ic name="download" size={14}/>{ld?"Exportando...":"Descargar CSV"}</button></div></div>);
+}
+
+function BannersAdmin() {
+  const{items,loading,load,create,update,remove}=useCrud("banners");const[modal,setModal]=useState(null);const[form,setForm]=useState({});const[conf,setConf]=useState(null);const[err,setErr]=useState("");
+  useEffect(()=>{load();},[load]);
+  const save=async()=>{setErr("");if(!form.texto?.trim()){setErr("El texto es requerido");return;}try{if(modal.mode==="add")await create({texto:form.texto,imagen_url:form.imagen_url||null,orden:parseInt(form.orden)||0,activo:true});else await update(modal.item.id,{texto:form.texto,imagen_url:form.imagen_url||null,orden:parseInt(form.orden)||0,activo:form.activo??true});setModal(null);}catch(e){setErr(e.message);}};
+  return(<div>
+    <div className="ch"><h3 className="ct">Banners Publicitarios</h3><button className="btn bg" onClick={()=>{setForm({orden:0});setErr("");setModal({mode:"add"});}}><Ic name="plus" size={14}/>Agregar</button></div>
+    <div className="cb">{loading?<Spin/>:<div className="tw"><table><thead><tr><th>Texto</th><th>Imagen</th><th>Orden</th><th>Estado</th><th></th></tr></thead><tbody>
+      {items.length===0&&<tr><td colSpan={5}><div className="es">Sin banners</div></td></tr>}
+      {items.map(b=><tr key={b.id}><td>{b.texto}</td><td style={{fontSize:".75rem",color:"var(--tl)",maxWidth:"150px",overflow:"hidden",textOverflow:"ellipsis"}}>{b.imagen_url||"—"}</td><td>{b.orden}</td><td><span className={`badge ${b.activo?"bj":"bpub"}`}>{b.activo?"Activo":"Inactivo"}</span></td>
+        <td><div style={{display:"flex",gap:"6px"}}><button className="btn bo bsm" onClick={()=>{setForm({texto:b.texto,imagen_url:b.imagen_url,orden:b.orden,activo:b.activo});setErr("");setModal({mode:"edit",item:b});}}><Ic name="edit" size={12}/></button><button className="btn bd bsm" onClick={()=>setConf(b.id)}><Ic name="trash" size={12}/></button></div></td></tr>)}
+    </tbody></table></div>}</div>
+    {modal&&<Modal title={modal.mode==="add"?"Nuevo Banner":"Editar Banner"} onClose={()=>setModal(null)} footer={<><button className="btn bo" onClick={()=>setModal(null)}>Cancelar</button><button className="btn bg" onClick={save}>Guardar</button></>}>
+      {err&&<Alrt type="error">{err}</Alrt>}
+      <div className="fg"><label className="fl">Texto</label><textarea className="fc" value={form.texto||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,texto:v}));}}/></div>
+      <div className="fg"><label className="fl">URL Imagen (opcional)</label><input className="fc" value={form.imagen_url||""} onChange={e=>{const v=e.target.value;setForm(f=>({...f,imagen_url:v}));}} placeholder="https://..."/></div>
+      <div className="fg"><label className="fl">Orden</label><input type="number" className="fc" value={form.orden??0} onChange={e=>{const v=e.target.value;setForm(f=>({...f,orden:v}));}}/></div>
+      {modal.mode==="edit"&&<label style={{display:"flex",alignItems:"center",gap:"8px",cursor:"pointer",marginTop:"8px"}}><input type="checkbox" checked={form.activo??true} onChange={e=>{const v=e.target.checked;setForm(f=>({...f,activo:v}));}}/><span style={{fontSize:".85rem",color:"var(--ts)"}}>Activo</span></label>}
+    </Modal>}
+    {conf&&<Confirm msg="¿Eliminar este banner?" onOk={async()=>{await remove(conf);setConf(null);}} onNo={()=>setConf(null)}/>}
+  </div>);
+}
+
+function UsuariosAdmin() {
+  const[users,setUsers]=useState([]);const[ld,setLd]=useState(true);
+  const load=useCallback(async()=>{setLd(true);const res=await supabase.from("profiles").select("*").order("created_at",{ascending:false});setUsers(res.data||[]);setLd(false);},[]);
+  useEffect(()=>{load();},[load]);
+  const changeRole=async(id,role)=>{await supabase.from("profiles").update({role}).eq("id",id);load();};
+  return(<div>
+    <div className="ch"><h3 className="ct">Gestión de Usuarios</h3></div>
+    <div className="cb">
+      <div className="alert ai" style={{marginBottom:"16px"}}><Ic name="users" size={14}/>El usuario se registra en la app → vos le asignás el rol desde acá.</div>
+      {ld?<Spin/>:<div className="tw"><table><thead><tr><th>Email</th><th>Rol</th><th>Desde</th><th>Cambiar rol</th></tr></thead><tbody>
+        {users.length===0&&<tr><td colSpan={4}><div className="es">Sin usuarios</div></td></tr>}
+        {users.map(u=><tr key={u.id}><td>{u.email}</td><td><span className={`badge ${u.role==="admin"?"ba":u.role==="juez"?"bj":"bpub"}`}>{u.role}</span></td><td style={{color:"var(--tl)",fontSize:".8rem"}}>{new Date(u.created_at).toLocaleDateString("es-AR")}</td>
+          <td><select className="fs" value={u.role} onChange={e=>changeRole(u.id,e.target.value)}><option value="publico">Público</option><option value="juez">Juez</option><option value="admin">Admin</option></select></td></tr>)}
+      </tbody></table></div>}
+    </div>
+  </div>);
+}
+
+function BannerCarousel() {
+  const[banners,setBanners]=useState([]);const[cur,setCur]=useState(0);
+  useEffect(()=>{supabase.from("banners").select("*").eq("activo",true).order("orden").then(res=>setBanners(res.data||[]));},[]);
+  useEffect(()=>{if(banners.length<=1)return;const t=setInterval(()=>setCur(c=>(c+1)%banners.length),4000);return()=>clearInterval(t);},[banners.length]);
+  if(!banners.length)return(<div className="bc" style={{display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}><span style={{fontSize:"2rem"}}>🤸‍♀️</span><h2 style={{color:"var(--gold)",fontFamily:"Playfair Display,serif",marginTop:"8px"}}>Torneo de Gimnasia Artística</h2><p style={{color:"rgba(245,240,232,.6)",marginTop:"4px",fontSize:".875rem"}}>Competencia Femenina</p></div>);
+  return(<div className="bc">{banners.map((b,i)=><div key={b.id} className={`bsl ${i===cur?"act":""}`} style={{backgroundImage:b.imagen_url?`url(${b.imagen_url})`:undefined,backgroundSize:"cover",backgroundPosition:"center"}}>{b.imagen_url&&<div style={{position:"absolute",inset:0,background:"rgba(13,27,42,.6)"}}/>}<div style={{position:"relative"}}><h2>{b.texto}</h2></div></div>)}{banners.length>1&&<div style={{position:"absolute",bottom:"10px",display:"flex",gap:"6px",left:"50%",transform:"translateX(-50%)"}}>{banners.map((_,i)=><button key={i} onClick={()=>setCur(i)} style={{width:i===cur?"20px":"6px",height:"6px",borderRadius:"3px",border:"none",background:i===cur?"var(--gold)":"rgba(255,255,255,.4)",cursor:"pointer",transition:"all .3s"}}/>)}</div>}</div>);
+}
+
+function PublicHome() {
+  const[s,setS]=useState({participantes:0,equipos:0,calificaciones:0});
+  useEffect(()=>{Promise.all([supabase.from("participantes").select("id"),supabase.from("equipos").select("id"),supabase.from("calificaciones").select("id")]).then(([p,e,c])=>setS({participantes:(p.data||[]).length,equipos:(e.data||[]).length,calificaciones:(c.data||[]).length}));},[]);
+  return(<div><BannerCarousel/><div className="sr">
+    <div className="sc"><div className="sv">{s.participantes}</div><div className="sl">Participantes</div></div>
+    <div className="sc"><div className="sv">{s.equipos}</div><div className="sl">Equipos</div></div>
+    <div className="sc"><div className="sv">{s.calificaciones}</div><div className="sl">Calificadas</div></div>
+    <div className="sc"><div className="sv">4</div><div className="sl">Disciplinas</div></div>
+  </div></div>);
+}
+
+function PublicParticipantes({userId}) {
+  const[parts,setParts]=useState([]);const[cals,setCals]=useState({});const[favs,setFavs]=useState(new Set());const[ld,setLd]=useState(true);
+  const[fil,setFil]=useState({equipo:"",nivel:"",categoria:"",anio:""});const[eq,setEq]=useState([]);const[nv,setNv]=useState([]);const[ct,setCt]=useState([]);const[an,setAn]=useState([]);
+  useEffect(()=>{(async()=>{const favProm=userId?supabase.from("favoritas").select("participante_id").eq("user_id",userId):Promise.resolve({data:[]});const[p,c,fv,e,n,cat,a]=await Promise.all([supabase.from("participantes").select("*, equipos(nombre), niveles(numero), categorias(nombre), anios(valor)").order("apellido"),supabase.from("calificaciones").select("*"),favProm,supabase.from("equipos").select("*").order("nombre"),supabase.from("niveles").select("*").order("numero"),supabase.from("categorias").select("*").order("nombre"),supabase.from("anios").select("*").order("valor")]);setParts(p.data||[]);const cm={};(c.data||[]).forEach(x=>{cm[x.participante_id]=x;});setCals(cm);setFavs(new Set((fv.data||[]).map(x=>x.participante_id)));setEq(e.data||[]);setNv(n.data||[]);setCt(cat.data||[]);setAn(a.data||[]);setLd(false);})();},[userId]);
+  const tog=async pid=>{if(!userId)return;if(favs.has(pid)){await supabase.from("favoritas").delete().eq("user_id",userId).eq("participante_id",pid);setFavs(s=>{const n=new Set(s);n.delete(pid);return n;});}else{await supabase.from("favoritas").insert({user_id:userId,participante_id:pid});setFavs(s=>new Set([...s,pid]));}};
+  const filt=parts.filter(p=>{if(fil.equipo&&p.equipo_id!==fil.equipo)return false;if(fil.nivel&&p.nivel_id!==fil.nivel)return false;if(fil.categoria&&p.categoria_id!==fil.categoria)return false;if(fil.anio&&p.anio_id!==fil.anio)return false;return true;});
+  const filterSets=[["equipo",eq,"nombre","Equipo"],["nivel",nv,"numero","Nivel"],["categoria",ct,"nombre","Categoría"],["anio",an,"valor","Año"]];
+  return(<div>
+    <div className="ch"><h3 className="ct">Participantes</h3><span style={{fontSize:".85rem",color:"var(--ts)"}}>{filt.length} gimnastas</span></div>
+    <div className="cb">
+      <div className="fr">{filterSets.map(([k,o,vk,lb])=><select key={k} className="fs" value={fil[k]} onChange={e=>{const v=e.target.value;setFil(prev=>({...prev,[k]:v}));}}><option value="">Todos {lb}s</option>{o.map(x=><option key={x.id} value={x.id}>{vk==="numero"?`Nivel ${x[vk]}`:x[vk]}</option>)}</select>)}</div>
+      {ld?<Spin/>:<div className="tw"><table><thead><tr><th></th><th>Participante</th><th>Equipo</th><th>Nivel</th><th>Cat.</th><th>Año</th><th>Total</th></tr></thead><tbody>
+        {filt.length===0&&<tr><td colSpan={7}><div className="es">Sin participantes</div></td></tr>}
+        {filt.map(p=>{const isFav=favs.has(p.id);return(<tr key={p.id}><td><button className={`fb ${isFav?"act":""}`} onClick={()=>tog(p.id)}><Ic name={isFav?"heart-filled":"heart"} size={16}/></button></td><td><strong>{p.apellido}, {p.nombre}</strong></td><td>{p.equipos?.nombre||"—"}</td><td>N{p.niveles?.numero||"—"}</td><td>{p.categorias?.nombre||"—"}</td><td>{p.anios?.valor||"—"}</td><td><strong style={{color:"var(--gold-dark)"}}>{cals[p.id]?.total?.toFixed(3)||"—"}</strong></td></tr>);})}
+      </tbody></table></div>}
+    </div>
+  </div>);
+}
+
+function MisFavoritas({userId}) {
+  const[data,setData]=useState([]);const[ld,setLd]=useState(true);
+  useEffect(()=>{if(!userId){setLd(false);return;}(async()=>{const fvRes=await supabase.from("favoritas").select("participante_id").eq("user_id",userId);if(!fvRes.data?.length){setLd(false);return;}const ids=fvRes.data.map(x=>x.participante_id);const[{data:pts},{data:cs}]=await Promise.all([supabase.from("participantes").select("*, equipos(nombre), niveles(numero), categorias(nombre), anios(valor)").in("id",ids),supabase.from("calificaciones").select("*")]);const cm={};(cs||[]).forEach(x=>{cm[x.participante_id]=x;});setData((pts||[]).map(p=>({...p,cal:cm[p.id]||null})));setLd(false);})();},[userId]);
+  const pod=fav=>{const g=data.filter(p=>p.categoria_id===fav.categoria_id&&p.nivel_id===fav.nivel_id&&p.anio_id===fav.anio_id).sort((a,b)=>(b.cal?.total||0)-(a.cal?.total||0));return{pos:g.findIndex(p=>p.id===fav.id)+1,total:g.length};};
+  const medals=["🥇","🥈","🥉"];
+  const discs=[["Suelo","suelo"],["Salto","salto"],["Viga","viga"],["Paralelas","paralelas"]];
+  if(!userId)return<div className="cb"><Alrt type="info">Iniciá sesión para guardar tus favoritas.</Alrt></div>;
+  return(<div>
+    <div className="ch"><h3 className="ct">Mis Favoritas</h3></div>
+    <div className="cb">{ld?<Spin/>:data.length===0?<div className="es"><Ic name="heart" size={32}/><p>Todavía no marcaste ninguna favorita.</p></div>:data.map(fav=>{const{pos,total}=pod(fav);return(<div key={fav.id} className="card" style={{marginBottom:"16px"}}>
+      <div style={{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px"}}>
+        <div><div style={{fontWeight:700,fontSize:"1rem",color:"var(--navy)"}}>{fav.apellido}, {fav.nombre}</div><div style={{fontSize:".8rem",color:"var(--ts)",marginTop:"4px"}}>{fav.equipos?.nombre} · N{fav.niveles?.numero} · {fav.categorias?.nombre} · {fav.anios?.valor}</div></div>
+        <div style={{textAlign:"right"}}><div style={{fontSize:"1.8rem",fontFamily:"Playfair Display,serif",color:pos<=3?"var(--gold)":"var(--tp)"}}>{pos<=3?medals[pos-1]:`#${pos}`}</div><div style={{fontSize:".75rem",color:"var(--tl)"}}>de {total} en su grupo</div></div>
+      </div>
+      {fav.cal&&<div style={{padding:"0 20px 16px",display:"flex",gap:"12px",flexWrap:"wrap"}}>{discs.map(([d,k])=><div key={d} style={{textAlign:"center",background:"var(--cream)",borderRadius:"8px",padding:"8px 16px"}}><div style={{fontSize:".65rem",textTransform:"uppercase",letterSpacing:".08em",color:"var(--ts)"}}>{d}</div><div style={{fontWeight:700,fontSize:"1.1rem",color:"var(--navy)"}}>{fav.cal[k]?.toFixed(3)||"—"}</div></div>)}<div style={{textAlign:"center",background:"var(--gold)",borderRadius:"8px",padding:"8px 16px"}}><div style={{fontSize:".65rem",textTransform:"uppercase",color:"var(--navy-light)"}}>Total</div><div style={{fontWeight:700,fontSize:"1.1rem",color:"var(--navy)"}}>{fav.cal.total?.toFixed(3)}</div></div></div>}
+    </div>);})}
+  </div>);
+}
+
+export default function App() {
+  const{user,profile,loading}=useAuth();
+  const[page,setPage]=useState("home");const[sbOpen,setSbOpen]=useState(false);
+  const role=(profile&&profile.role)||"publico";
+  const nav=[
+    {id:"home",label:"Inicio",icon:"home",roles:["admin","juez","publico"]},
+    {id:"equipos",label:"Equipos",icon:"trophy",roles:["admin"],sec:"Admin"},
+    {id:"niveles",label:"Niveles",icon:"bar-chart",roles:["admin"]},
+    {id:"categorias",label:"Categorías",icon:"tag",roles:["admin"]},
+    {id:"anios",label:"Años",icon:"list",roles:["admin"]},
+    {id:"participantes-admin",label:"Participantes",icon:"users",roles:["admin"]},
+    {id:"usuarios",label:"Usuarios",icon:"lock",roles:["admin"]},
+    {id:"banners",label:"Publicidad",icon:"image",roles:["admin"]},
+    {id:"export",label:"Exportar CSV",icon:"download",roles:["admin"]},
+    {id:"calificaciones",label:"Calificaciones",icon:"star",roles:["admin","juez"],sec:role==="juez"?"Juez":"Calificaciones"},
+    {id:"import-txt",label:"Importar TXT",icon:"upload",roles:["admin","juez"]},
+    {id:"ranking",label:"Ranking",icon:"award",roles:["admin","juez"]},
+    {id:"participantes",label:"Participantes",icon:"users",roles:["publico"],sec:"Torneo"},
+    {id:"ranking-pub",label:"Ranking",icon:"award",roles:["publico"]},
+    {id:"favoritas",label:"Mis Favoritas",icon:"heart",roles:["publico"]},
+  ];
+  const vis=nav.filter(n=>n.roles.includes(role));
+  if(loading)return<div style={{minHeight:"100vh",background:"var(--navy)",display:"flex",alignItems:"center",justifyContent:"center"}}><div className="spin" style={{borderTopColor:"var(--gold)",width:"48px",height:"48px"}}/></div>;
+  if(!user)return<AuthPage/>;
+  const renderPage=()=>{switch(page){
+    case"home":return<PublicHome/>;
+    case"equipos":return<div className="card"><SimpleCRUD title="Equipos" table="equipos" fieldLabel="Nombre del Equipo" fieldKey="nombre"/></div>;
+    case"niveles":return<div className="card"><SimpleCRUD title="Niveles" table="niveles" fieldLabel="Número (1-11)" fieldKey="numero"/></div>;
+    case"categorias":return<div className="card"><SimpleCRUD title="Categorías" table="categorias" fieldLabel="Nombre de Categoría" fieldKey="nombre"/></div>;
+    case"anios":return<div className="card"><SimpleCRUD title="Años" table="anios" fieldLabel="Año (ej: 2014)" fieldKey="valor"/></div>;
+    case"participantes-admin":return<div className="card"><ParticipantesAdmin/></div>;
+    case"participantes":return<div className="card"><PublicParticipantes userId={user&&user.id}/></div>;
+    case"favoritas":return<div className="card"><MisFavoritas userId={user&&user.id}/></div>;
+    case"ranking":case"ranking-pub":return<div className="card"><Ranking/></div>;
+    case"calificaciones":return<div className="card"><Calificaciones profile={profile}/></div>;
+    case"import-txt":return<div className="card"><ImportTxt onDone={()=>setPage("participantes-admin")}/></div>;
+    case"export":return<div className="card"><ExportExcel/></div>;
+    case"banners":return<div className="card"><BannersAdmin/></div>;
+    case"usuarios":return<div className="card"><UsuariosAdmin/></div>;
+    default:return<div className="es"><p>Página no encontrada</p></div>;
+  }};
+  const cur=nav.find(n=>n.id===page);
+  const ini=((user&&user.email)||"U")[0].toUpperCase();
+  let lastSec=null;
+  return(<>
+    <div className="shell">
+      <div className={`sov ${sbOpen?"vis":""}`} onClick={()=>setSbOpen(false)}/>
+      <aside className={`sb ${sbOpen?"open":""}`}>
+        <div className="sb-logo"><h1>🤸‍♀️ GimnasiaTorneo</h1><p>Gymnastic Tournament Manager</p></div>
+        <nav className="sb-nav">{vis.map(item=>{let secEl=null;if(item.sec&&item.sec!==lastSec){secEl=<div key={`s-${item.sec}`} className="sec-lbl">{item.sec}</div>;lastSec=item.sec;}return(<div key={item.id}>{secEl}<div className={`ni ${page===item.id?"act":""}`} onClick={()=>{setPage(item.id);setSbOpen(false);}}><Ic name={item.icon} size={16}/>{item.label}</div></div>);})}</nav>
+        <div className="sb-foot"><div className="ubadge"><div className="uavatar">{ini}</div><div><div className="uemail">{user&&user.email}</div><div className="urole">{role}</div></div></div><button className="btn-out" onClick={()=>supabase.auth.signOut()}>Cerrar sesión</button></div>
+      </aside>
+      <main className="mc">
+        <div className="topbar">
+          <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+            <button className="ham" onClick={()=>setSbOpen(v=>!v)}><span/><span/><span/></button>
+            <span className="topbar-t">{(cur&&cur.label)||"Inicio"}</span>
+          </div>
+          <span className={`badge ${role==="admin"?"ba":role==="juez"?"bj":"bpub"}`}>{role}</span>
+        </div>
+        <div className="pc">{renderPage()}</div>
+      </main>
+    </div>
+  </>);
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
